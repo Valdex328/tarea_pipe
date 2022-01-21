@@ -17,9 +17,8 @@ int main() {
   int   fd[2];
   srand(time(NULL));
   int numero_random;
-  int numero;
-  char text[20];
-  int archivo_num = open("numero.txt", O_RDWR | O_CREAT);
+  char buf[4];
+  char text[4];
 
   if (pipe(fd) == -1) {
 	perror("Creating pipe");
@@ -36,9 +35,8 @@ int main() {
 	close(fd[WRITE]);
 	// Redirect STDIN  read from the pipe.
 	dup2(fd[READ], STDIN_FILENO);
-	char leer[20];
-	numero = read(archivo_num, leer, strlen(leer));
-	int value = atoi(leer);
+	read(fd[0], buf, strlen(buf));
+	int value = atoi(buf);
 	printf("Numero: %d \n", value);
 	if (value < 500){
 	   	 printf("menor que 500 \n");
@@ -53,7 +51,7 @@ int main() {
 	dup2(fd[WRITE], STDOUT_FILENO);
 	int numero_random = rand()%1001 + 1;
 	sprintf(text, "%d", numero_random);
-	write(archivo_num, text, strlen(text));
+	write(fd[1], text, strlen(text));
 
   }
 }
